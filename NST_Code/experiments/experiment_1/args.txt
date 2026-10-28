@@ -1,0 +1,4 @@
+content_dir: /Users/harsha/Desktop/AI_Image_Filter/NST_Code/Content
+style_dir: /Users/harsha/Desktop/AI_Image_Filter/NST_Code/Style
+vgg_model_path: /Users/harsha/Desktop/AI_Image_Filter/NST_Code/vgg_normalised.pth
+experiment_name: experiment_1
