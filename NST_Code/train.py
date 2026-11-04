@@ -45,6 +45,13 @@ def parse_args():
 
     parser.add_argument('--log_interval', type=int, default=1,
                         help='Log interval')
+        
+    parser.add_argument('--save_interval', type=int, default=2,
+                        help='Save interval')
+
+    parser.add_argument('--resume', action='store_true', default=False,
+                        help='Resume training')
+    
     return parser.parse_args()
 
 def main():
@@ -75,6 +82,10 @@ def main():
     scheduler = optim.lr_scheduler.LambdaLR(
         optimizer, 
         lr_lambda = lambda epoch:  1.0 / (1.0 + args.lr_decay * epoch))
+    
+    if args.resume:
+        decoder.load_state_dict(torch.load(args.decoder_path))
+        optimizer.load_state_dict(torch.load(args.optimizer_path))
 
     print('Training...')
 
@@ -139,7 +150,13 @@ def main():
         if (epoch+1) % args.log_interval == 0:
             tqdm.write(f'Iter {epoch+1}: Loss:{running_loss:4f}, Content Loss: {running_closs:4f}, Style Loss: {running_sloss:4f}')
 
+        if (epoch+1) % args.save_interval == 0:
+            torch.save(decoder.state_dict(), save_dir / f'decoder_{epoch+1}.pth')
+            torch.save(optimizer.state_dict(), save_dir / f'optimizer_{epoch+1}.pth')
 
+            with torch.no_grad():
+                output = torch.cat([content_batch, style_batch, g], dim=0)
+                save_image(output, save_dir / f'output_{epoch+1}.png', nrow=args.batch_size)
 
         
 
