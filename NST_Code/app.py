@@ -126,3 +126,17 @@ def index():
 
     return render_template('index.html', form=form, result_image=result_image, content_image=content_filename,
                            style_image=style_filename, error=error)
+
+@app.route('/uploads/<filename>')
+def send_image(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+
+@app.route('/examples/<path:filename>')
+def send_example(filename):
+    return send_from_directory('examples', filename)
+
+
+if __name__ == '__main__':
+    from werkzeug.serving import run_simple
+    run_simple('localhost', 5000, app, use_reloader=True, use_debugger=True)
